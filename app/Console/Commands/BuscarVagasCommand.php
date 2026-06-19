@@ -19,7 +19,7 @@ class BuscarVagasCommand extends Command
         $perfilCandidato = [
             'nome' => 'Carlos Henrique Alonso Tobias',
             'email' => 'seu-email@gmail.com', // <-- Coloque seu e-mail aqui para receber a lista!
-            'skills' => ['php', 'laravel']
+            'skills' => ['laravel', 'php', 'javascript' ]
         ];
 
         $termoBusca = implode(' ', $perfilCandidato['skills']);
