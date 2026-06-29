@@ -8,18 +8,28 @@ use Illuminate\Support\Facades\Mail;
 
 class BuscarVagasCommand extends Command
 {
-    protected $signature = 'app:buscar-vagas';
+    protected $signature = 'app:buscar-vagas
+                            {--email= : O e-mail do usuário}
+                            {--nome= : O nome do candidato}
+                            {--skills= : Skills separadas por vírgula (ex: php,laravel)}';
+
     protected $description = 'Consome a API da Adzuna, filtra por stack, exibe links no terminal e envia por e-mail.';
 
     public function handle()
     {
+
+        $email = $this->option('email') ?? 'seu-email@gmail.com';
+        $nome = $this->option('nome') ?? 'Carlos Henrique Alonso Tobias';
+
+        $skillsInput = $this->option('skills');
+        $skills = $skillsInput ? explode(',', $skillsInput) : ['laravel', 'php', 'javascript'];
+
         $this->info("🤖 Iniciando o Robô de Candidaturas Automatizadas (Back-end)...");
 
-        // 1. Perfil do Candidato
         $perfilCandidato = [
-            'nome' => 'Carlos Henrique Alonso Tobias',
-            'email' => 'seu-email@gmail.com', // <-- Coloque seu e-mail aqui para receber a lista!
-            'skills' => ['laravel', 'php', 'javascript' ]
+            'nome' => $nome,
+            'email' => $email,
+            'skills' => array_map('trim', $skills)
         ];
 
         $termoBusca = implode(' ', $perfilCandidato['skills']);
@@ -64,10 +74,9 @@ class BuscarVagasCommand extends Command
             ];
         }
 
-        // 3. Algoritmo de Matching e Preparação do Relatório
         $headers = ['Vaga', 'Empresa', 'Decisão', 'Link da Vaga'];
         $linhasTabela = [];
-        $vagasAprovadas = []; // Array para guardar o que vai pro e-mail
+        $vagasAprovadas = [];
 
         foreach ($vagasApi as $vaga) {
             $tituloReal = $vaga['title'];
@@ -95,14 +104,11 @@ class BuscarVagasCommand extends Command
                 $decisao = 'Ignorada ❌';
             }
 
-            // Encurta o link na tabela do terminal para não quebrar o layout da tela
-            $linkCurto = substr($linkReal, 0, 45) . '...';
-
             $linhasTabela[] = [
                 $tituloReal,
                 $empresaReal,
                 $decisao,
-                $linkReal // No terminal moderno você consegue clicar direto no link completo
+                $linkReal
             ];
         }
 
@@ -110,14 +116,13 @@ class BuscarVagasCommand extends Command
         $this->info("📊 RELATÓRIO DE PROCESSAMENTO DO ALGORITMO:");
         $this->table($headers, $linhasTabela);
 
-        // 4. Disparo do E-mail Automatizado
         if (count($vagasAprovadas) > 0) {
             $this->info("📧 Enviando lista de vagas aprovadas para " . $perfilCandidato['email'] . "...");
 
             try {
                 Mail::raw($this->formatarMensagemEmail($perfilCandidato['nome'], $vagasAprovadas), function ($message) use ($perfilCandidato) {
                     $message->to($perfilCandidato['email'])
-                            ->subject('🤖 Seeker - Suas Vagas Compatíveis do Dia!');
+                        ->subject('🤖 Seeker - Suas Vagas Compatíveis do Dia!');
                 });
                 $this->info("✅ E-mail enviado com sucesso!");
             } catch (\Exception $e) {
@@ -128,7 +133,6 @@ class BuscarVagasCommand extends Command
         return Command::SUCCESS;
     }
 
-    // Auxiliar para montar o texto do e-mail de forma limpa
     private function formatarMensagemEmail($nome, $vagas)
     {
         $mensagem = "Olá, {$nome}!\n\n";
