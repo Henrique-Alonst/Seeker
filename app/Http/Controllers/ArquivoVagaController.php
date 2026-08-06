@@ -25,20 +25,10 @@ class ArquivoVagaController extends Controller
             'link' => ['nullable', 'string'],
             'notas' => ['nullable', 'string'],
             'data' => ['required', 'date'],
+            'salario' => ['nullable', 'decimal:0,2'],
         ]);
 
         ArquivoVaga::create($dadosValidados);
-
-        // $nomeCargo = $request->input('cargo');
-        // $nomeEmpresa = $request->input('empresa');
-        // $nomeStatus = $request->input('status');
-        // $nomeLink = $request->input('link');
-        // $nomeNotas = $request->input('notas');
-        // $data = $request->input('data');
-
-        // $arquivoVaga = new ArquivoVaga;
-        // $arquivoVaga->save();
-
         return redirect()->back()->with('success', 'Vaga registrada com sucesso!!');
     }
 }

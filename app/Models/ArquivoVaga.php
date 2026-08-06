@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'cargo', 'empresa', 'status', 'link', 'notas', 'data',
+    'cargo', 'empresa', 'status', 'link', 'notas', 'data', 'salario',
 ])]
 class ArquivoVaga extends Model
 {

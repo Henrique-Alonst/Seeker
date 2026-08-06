@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('link')->nullable();
 
             $table->text('notas')->nullable(); //anotações extras // text aceita textos maiores.
+            $table->decimal('salario', 10, 2)->nullable();
 
             $table->date('data');
 

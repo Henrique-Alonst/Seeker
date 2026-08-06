@@ -47,6 +47,10 @@
           <label>06 · Notas</label>
           <textarea name="notas" placeholder="Detalhes do processo...">{{ old('notas') }}</textarea>
         </div>
+        <div class="field grow">
+          <label>07 · Salário</label>
+          <input type="text" name="salario" placeholder="4.000" value="{{ old('salario') }}">
+        </div>
       </div>
 
       <button type="submit" class="submit-btn">Abrir processo →</button>
@@ -60,7 +64,7 @@
       <div class="case">
         <span class="num">PROC. Nº {{ str_pad($vagas->count() - $index, 3, '0', STR_PAD_LEFT) }}</span>
         <h3>{{ $vaga->cargo }}</h3>
-        <div class="company">{{ $vaga->empresa }} — {{ $vaga->data->format('d.m.Y') }}</div>
+        <div class="company">{{ $vaga->empresa }} — {{ $vaga->data->format('d.m.Y') }} - {{ $vaga->salario }}</div>
 
         @if($vaga->notas)
           <div class="notes">{{ $vaga->notas }}</div>
