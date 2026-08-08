@@ -62,9 +62,20 @@
   <div class="grid">
     @forelse($vagas as $index => $vaga)
       <div class="case">
+        <div class="actions">
+            <a href="{{route('vagas.editar', $vaga)}}">editar</a>
+            <form action="{{route('vagas.excluir', $vaga)}}" method="POST" class="inline-del"
+            onsubmit="return confirm('Excluir esse processo?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="del">Excluir</button>
+
+            </form>
+        </div>
+
         <span class="num">PROC. Nº {{ str_pad($vagas->count() - $index, 3, '0', STR_PAD_LEFT) }}</span>
         <h3>{{ $vaga->cargo }}</h3>
-        <div class="company">{{ $vaga->empresa }} — {{ $vaga->data->format('d.m.Y') }} - {{ $vaga->salario }}</div>
+        <div class="company">{{ $vaga->empresa }} — {{ $vaga->data->format('d.m.Y') }} - {{ $vaga->salario }} R$</div>
 
         @if($vaga->notas)
           <div class="notes">{{ $vaga->notas }}</div>

@@ -17,7 +17,6 @@ class ArquivoVagaController extends Controller
 
     public function salvarVaga(Request $request)
     {
-
         $dadosValidados = $request->validate([
             'cargo' => ['required', 'string', 'max:255'],
             'empresa' => ['required', 'string', 'max:255'],
@@ -30,5 +29,14 @@ class ArquivoVagaController extends Controller
 
         ArquivoVaga::create($dadosValidados);
         return redirect()->back()->with('success', 'Vaga registrada com sucesso!!');
+    }
+
+    public function excluirVaga($id)
+    {
+        $vaga = ArquivoVaga::findOrFail($id);
+        $vaga->delete();
+
+        return redirect()->back()->with('success', 'Vaga excluída.');
+
     }
 }
