@@ -314,6 +314,79 @@
             text-decoration: underline;
             font-size: 11px;
         }
+
+        /* ===== Estilos para o Modal de Edição ===== */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.7);
+            /* usa o tom do var(--preto) com opacidade */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--branco);
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 8px 8px 0px var(--preto);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--branco);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .close-btn:hover {
+            color: var(--vermelho);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            margin-top: 18px;
+            background: var(--cinza-claro);
+            color: var(--preto);
+            border: 2px solid var(--preto);
+            padding: 12px 22px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .btn-cancel:hover {
+            background: var(--cinza-medio);
+            color: var(--branco);
+        }
+
+        /* Ajuste no botão "editar" no card para manter hover nativo do seu estilo */
+        .case .actions button.btn-edit:hover {
+            background: var(--preto);
+            color: var(--branco);
+        }
     </style>
 </head>
 

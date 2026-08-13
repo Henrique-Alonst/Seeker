@@ -14,6 +14,7 @@ Route::delete('/vagas/{vaga}', [ArquivoVagaController::class, 'excluirVaga'])->n
 
 
 Route::get('/vagas/{vaga}/editar', [ArquivoVagaController::class, 'editarVaga'])->name('vagas.editar');
-Route::put('/vagas/{vaga}', [ArquivoVagaController::class, 'update'])->name('vagas.update');
+
+Route::put('/vagas/{vaga}', [ArquivoVagaController::class, 'editarVaga'])->name('vagas.update');
 
 
