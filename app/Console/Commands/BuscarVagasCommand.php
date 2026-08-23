@@ -8,23 +8,29 @@ use Illuminate\Support\Facades\Mail;
 
 class BuscarVagasCommand extends Command
 {
+    /**
+     * Assinatura do comando CLI com opções configuráveis.
+     */
     protected $signature = 'app:buscar-vagas
-                            {--email= : O e-mail do usuário}
+                            {--email= : O e-mail do destinatário}
                             {--nome= : O nome do candidato}
-                            {--skills= : Skills separadas por vírgula (ex: php,laravel)}';
+                            {--skills= : Lista de termos/skills separados por vírgula}';
 
-    protected $description = 'Consome a API da Adzuna, filtra por stack, exibe links no terminal e envia por e-mail.';
+    /**
+     * Descrição do comando.
+     */
+    protected $description = 'Consome a API da Adzuna, filtra vagas por termos e envia o relatório por e-mail.';
 
     public function handle()
     {
-
+        // 1. Definição das variáveis de entrada e parâmetros padrão
         $email = $this->option('email') ?? 'seu-email@gmail.com';
         $nome = $this->option('nome') ?? 'Carlos Henrique Alonso Tobias';
 
         $skillsInput = $this->option('skills');
-        $skills = $skillsInput ? explode(',', $skillsInput) : ['laravel', 'php', 'javascript'];
+        $skills = $skillsInput ? explode(',', $skillsInput) : ['desenvolvedor', 'junior'];
 
-        $this->info("🤖 Iniciando o Robô de Candidaturas Automatizadas (Back-end)...");
+        $this->info("Iniciando busca de vagas...");
 
         $perfilCandidato = [
             'nome' => $nome,
@@ -32,13 +38,15 @@ class BuscarVagasCommand extends Command
             'skills' => array_map('trim', $skills)
         ];
 
+        // 2. Preparação dos parâmetros para a API da Adzuna
         $termoBusca = implode(' ', $perfilCandidato['skills']);
         $appId = env('ADZUNA_APP_ID');
         $appKey = env('ADZUNA_APP_KEY');
         $vagasApi = [];
 
+        // 3. Chamada HTTP para a API externa
         if ($appId && $appKey) {
-            $this->info("🔍 Conectando à API da Adzuna e buscando por: '{$termoBusca}'...");
+            $this->info("Conectando à API Adzuna (Termo: '{$termoBusca}')...");
 
             try {
                 $response = Http::timeout(8)->get("https://api.adzuna.com/v1/api/jobs/br/search/1", [
@@ -52,12 +60,13 @@ class BuscarVagasCommand extends Command
                     $vagasApi = $response->json()['results'] ?? [];
                 }
             } catch (\Exception $e) {
-                $this->warn("⚠️ Erro de conexão com a API. Usando dados locais...");
+                $this->warn("Erro de conexão com a API externa. Ativando contingência local.");
             }
         }
 
+        // 4. Fallback: uso de dados locais caso a API falhe ou não retorne dados
         if (empty($vagasApi)) {
-            $this->warn("⚠️ Nenhuma vaga retornada da API. Usando contingência local...");
+            $this->warn("Nenhuma vaga retornada da API. Utilizando dados de contingência.");
             $vagasApi = [
                 [
                     'title' => 'Desenvolvedor PHP/Laravel',
@@ -74,7 +83,8 @@ class BuscarVagasCommand extends Command
             ];
         }
 
-        $headers = ['Vaga', 'Empresa', 'Decisão', 'Link da Vaga'];
+        // 5. Filtragem de dados com base nas skills do candidato
+        $headers = ['Vaga', 'Empresa', 'Decisão', 'Link'];
         $linhasTabela = [];
         $vagasAprovadas = [];
 
@@ -94,14 +104,14 @@ class BuscarVagasCommand extends Command
             }
 
             if (count($skillsEncontradas) > 0) {
-                $decisao = 'Aprovada ✅';
+                $decisao = 'Aprovada';
                 $vagasAprovadas[] = [
                     'titulo' => $tituloReal,
                     'empresa' => $empresaReal,
                     'link' => $linkReal
                 ];
             } else {
-                $decisao = 'Ignorada ❌';
+                $decisao = 'Ignorada';
             }
 
             $linhasTabela[] = [
@@ -112,41 +122,46 @@ class BuscarVagasCommand extends Command
             ];
         }
 
+        // 6. Exibição do resultado no terminal
         $this->newLine();
-        $this->info("📊 RELATÓRIO DE PROCESSAMENTO DO ALGORITMO:");
+        $this->info("Relatório de Processamento:");
         $this->table($headers, $linhasTabela);
 
+        // 7. Envio de e-mail com o resumo das vagas filtradas
         if (count($vagasAprovadas) > 0) {
-            $this->info("📧 Enviando lista de vagas aprovadas para " . $perfilCandidato['email'] . "...");
+            $this->info("Enviando e-mail com vagas aprovadas para: " . $perfilCandidato['email']);
 
             try {
                 Mail::raw($this->formatarMensagemEmail($perfilCandidato['nome'], $vagasAprovadas), function ($message) use ($perfilCandidato) {
                     $message->to($perfilCandidato['email'])
-                        ->subject('🤖 Seeker - Suas Vagas Compatíveis do Dia!');
+                        ->subject('Seeker - Relatório de Vagas Compatíveis');
                 });
-                $this->info("✅ E-mail enviado com sucesso!");
+                $this->info("E-mail enviado com sucesso.");
             } catch (\Exception $e) {
-                $this->error("❌ Falha ao enviar e-mail. Verifique as configurações do seu .env.");
+                $this->error("Falha ao enviar e-mail. Verifique as credenciais no arquivo .env.");
             }
         }
 
         return Command::SUCCESS;
     }
 
+    /**
+     * Formata o texto simples que será enviado no corpo do e-mail.
+     */
     private function formatarMensagemEmail($nome, $vagas)
     {
-        $mensagem = "Olá, {$nome}!\n\n";
-        $mensagem .= "O robô Seeker encontrou as seguintes vagas compatíveis com o seu perfil:\n\n";
+        $mensagem = "Olá, {$nome}.\n\n";
+        $mensagem .= "As seguintes vagas foram encontradas com base nas suas preferências:\n\n";
         $mensagem .= "--------------------------------------------------\n";
 
         foreach ($vagas as $vaga) {
-            $mensagem .= "📌 Vaga: {$vaga['titulo']}\n";
-            $mensagem .= "🏢 Empresa: {$vaga['empresa']}\n";
-            $mensagem .= "🔗 Link para Candidatura: {$vaga['link']}\n";
+            $mensagem .= "Vaga: {$vaga['titulo']}\n";
+            $mensagem .= "Empresa: {$vaga['empresa']}\n";
+            $mensagem .= "Link: {$vaga['link']}\n";
             $mensagem .= "--------------------------------------------------\n";
         }
 
-        $mensagem .= "\nBoa sorte no processo seletivo!\nAtenciosamente,\nRobô Seeker 🤖";
+        $mensagem .= "\nAtenciosamente,\nSistema Seeker";
         return $mensagem;
     }
 }
