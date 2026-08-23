@@ -387,6 +387,36 @@
             background: var(--preto);
             color: var(--branco);
         }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #555;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .filter-btn.active {
+            background-color: #111;
+            color: #fff;
+            border-color: #111;
+        }
     </style>
 </head>
 

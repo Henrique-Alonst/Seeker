@@ -9,12 +9,23 @@ use Illuminate\Validation\ValidationException;
 class ArquivoVagaController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $vagas = ArquivoVaga::latest()->get(); // Busca do banco (da mais recente para a mais antiga)
-        return view('home', compact('vagas')); // Envia a variável $vagas para a view
-    }
+        $query = ArquivoVaga::query();
 
+        // Aplica o filtro de status na Query caso a URL contenha ?status=valor
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Busca as vagas filtradas (ou todas) da mais recente para a mais antiga
+        $vagas = $query->latest()->get();
+
+        // Busca a contagem total de vagas independentemente do filtro aplicado
+        $vagasCountTotal = ArquivoVaga::count();
+
+        return view('home', compact('vagas', 'vagasCountTotal'));
+    }
     public function salvarVaga(Request $request)
     {
         $dadosValidados = $request->validate([
@@ -37,7 +48,6 @@ class ArquivoVagaController extends Controller
         $vaga->delete();
 
         return redirect()->back()->with('success', 'Vaga excluída.');
-
     }
 
     public function editarVaga(Request $request, $id)

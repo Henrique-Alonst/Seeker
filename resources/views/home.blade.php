@@ -59,6 +59,36 @@
 
   <div class="archive-label">— arquivo de processos —</div>
 
+  <!-- Filtros por Status -->
+<div class="filters" id="arquivo-secao">
+  <a href="{{ route('vagas.index') }}#arquivo-secao"
+     class="filter-btn {{ !request('status') ? 'active' : '' }}">
+    Todos ({{ $vagasCountTotal ?? $vagas->count() }})
+  </a>
+  <a href="{{ route('vagas.index', ['status' => 'aplicado']) }}#arquivo-secao"
+     class="filter-btn {{ request('status') == 'aplicado' ? 'active' : '' }}">
+    Aplicado
+  </a>
+  <a href="{{ route('vagas.index', ['status' => 'entrevista']) }}#arquivo-secao"
+     class="filter-btn {{ request('status') == 'entrevista' ? 'active' : '' }}">
+    Entrevista
+  </a>
+  <a href="{{ route('vagas.index', ['status' => 'teste']) }}#arquivo-secao"
+     class="filter-btn {{ request('status') == 'teste' ? 'active' : '' }}">
+    Teste Técnico
+  </a>
+  <a href="{{ route('vagas.index', ['status' => 'oferta']) }}#arquivo-secao"
+     class="filter-btn {{ request('status') == 'oferta' ? 'active' : '' }}">
+    Oferta
+  </a>
+  <a href="{{ route('vagas.index', ['status' => 'recusado']) }}#arquivo-secao"
+     class="filter-btn {{ request('status') == 'recusado' ? 'active' : '' }}">
+    Recusado
+  </a>
+</div>
+
+<div class="archive-label">— arquivo de processos —</div>
+
   <div class="grid">
     @forelse($vagas as $index => $vaga)
       <div class="case">
