@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class DicasController extends Controller
 {
-    public function dicasView()
-    {
-        $dicas = Dicas::all();
-        return view('dicas.index', compact('dicas'));
-    }
 
     public function salvarDica(Request $request)
     {
@@ -34,7 +29,6 @@ class DicasController extends Controller
     public function editarDica(Request $request, $id)
     {
         $dica = Dicas::findOrFail($id);
-
         $dadosValidados = $request->validate([
             'descricao' => ['required', 'string', 'max:255'],
         ]);
