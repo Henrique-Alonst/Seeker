@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\ArquivoVaga;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ArquivoVagaController extends Controller
 {
