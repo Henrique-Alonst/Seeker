@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArquivoVaga;
+use App\Models\Dicas;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ArquivoVagaController extends Controller
 {
@@ -24,8 +24,12 @@ class ArquivoVagaController extends Controller
         // Busca a contagem total de vagas independentemente do filtro aplicado
         $vagasCountTotal = ArquivoVaga::count();
 
-        return view('home', compact('vagas', 'vagasCountTotal'));
+        //Retorna dicas
+        $dicas = Dicas::orderBy('created_at', 'desc')->get();
+
+        return view('home', compact('vagas', 'vagasCountTotal', 'dicas'));
     }
+    
     public function salvarVaga(Request $request)
     {
         $dadosValidados = $request->validate([

@@ -73,7 +73,6 @@
             letter-spacing: .08em;
         }
 
-
         /* ===== Ficha de admissão (formulário de cadastro) ===== */
         .intake {
             border: 2px solid var(--preto);
@@ -417,11 +416,133 @@
             color: #fff;
             border-color: #111;
         }
+
+        /* ===== Widget Flutuante de Dicas ===== */
+        .dicas-widget {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 340px;
+            background: var(--branco);
+            border: 2px solid var(--preto);
+            box-shadow: 4px 4px 0px var(--preto);
+            z-index: 1000;
+        }
+
+        .dicas-widget .head {
+            background: var(--preto);
+            color: var(--branco);
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .dicas-widget .body {
+            padding: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dicas-widget form {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .dicas-widget textarea {
+            font-size: 11px;
+            min-height: 50px;
+            border: 1px solid var(--preto);
+            padding: 6px;
+        }
+
+        .dica-form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .dicas-widget button.btn-salvar {
+            background: var(--preto);
+            color: var(--branco);
+            border: none;
+            padding: 4px 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .dicas-widget button.btn-salvar:hover {
+            background: var(--vermelho);
+        }
+
+        .dicas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid var(--cinza-claro);
+            padding-top: 8px;
+        }
+
+        .dica-item {
+            border: 1px solid var(--preto);
+            padding: 6px;
+            background: var(--cinza-fundo);
+        }
+
+        .dica-item p {
+        margin: 0 0 6px 0;
+        font-size: 11px;
+        line-height: 1.3;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        }
+
+        .dica-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; /* Garante alinhamento vertical perfeito */
+        gap: 4px;
+        }
+
+        .btn-mini {
+            background: var(--branco);
+            border: 1px solid var(--preto);
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            padding: 1px 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-mini:hover {
+            background: var(--preto);
+            color: var(--branco);
+        }
+
+        .btn-mini.del:hover {
+            background: var(--vermelho);
+            border-color: var(--vermelho);
+            color: var(--branco);
+        }
+
+        .dicas-empty {
+            font-size: 10px;
+            color: var(--cinza-escuro);
+        }
+
     </style>
 </head>
 
 <body>
     @yield('content')
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 
 </html>
