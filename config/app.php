@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dados do Candidato Padrão
+    |--------------------------------------------------------------------------
+    */
+    'candidate' => [
+        'name'  => env('CANDIDATE_NAME', 'Carlos Henrique Alonso Tobias'),
+        'email' => env('CANDIDATE_EMAIL', 'henriquealonso407@gmail.com'),
+    ],
+
 ];

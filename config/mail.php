@@ -115,4 +115,14 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Mail Recipient
+    |--------------------------------------------------------------------------
+    */
+    'to' => [
+        'address' => env('MAIL_DEFAULT_RECIPIENT', 'henriquealonso407@gmail.com'),
+        'name'    => env('CANDIDATE_NAME', 'Carlos Henrique Alonso Tobias'),
+    ],
+
 ];
