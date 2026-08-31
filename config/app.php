@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dados do Candidato Padrão
+    |--------------------------------------------------------------------------
+    */
+    'candidate' => [
+        'name'  => env('CANDIDATE_NAME'),
+        'email' => env('CANDIDATE_EMAIL'),
+        'location' => env('CANDIDATE_LOCATION'),
+        'km'       => env('CANDIDATE_KM'),
+    ],
+
 ];
