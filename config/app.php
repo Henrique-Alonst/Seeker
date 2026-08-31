@@ -129,8 +129,10 @@ return [
     |--------------------------------------------------------------------------
     */
     'candidate' => [
-        'name'  => env('CANDIDATE_NAME', 'Carlos Henrique Alonso Tobias'),
-        'email' => env('CANDIDATE_EMAIL', 'henriquealonso407@gmail.com'),
+        'name'  => env('CANDIDATE_NAME'),
+        'email' => env('CANDIDATE_EMAIL'),
+        'location' => env('CANDIDATE_LOCATION'),
+        'km'       => env('CANDIDATE_KM'),
     ],
 
 ];

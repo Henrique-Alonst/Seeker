@@ -9,37 +9,39 @@ use Illuminate\Support\Facades\Mail;
 
 class BuscarVagasCommand extends Command
 {
-    protected $signature = 'app:buscar-vagas
-                            {--email= : O e-mail do destinatário}
-                            {--nome= : O nome do candidato}
-                            {--skills= : Lista de termos/skills separados por vírgula}';
+    protected $signature = 'app:buscar-vagas {--skills= : Lista de termos/skills separados por vírgula}';
 
     protected $description = 'Consome a API da Adzuna, filtra vagas por termos e envia o relatório por e-mail.';
 
     public function handle(AdzunaService $adzunaService, FiltroVagaService $filterService): int
     {
-        // Prioridade: Opção da CLI -> Configuração (.env via config/app.php)
-        $email = $this->option('email') ?? config('app.candidate.email');
-        $nome  = $this->option('nome')  ?? config('app.candidate.name');
+        $email  = config('app.candidate.email');
+        $nome   = config('app.candidate.name');
+        $cidade = config('app.candidate.location', '');
+        $raio   = (int) config('app.candidate.km', 50);
 
         $skillsInput = $this->option('skills');
         $skills = array_map('trim', $skillsInput ? explode(',', $skillsInput) : ['desenvolvedor', 'junior']);
 
-        $this->info("Iniciando busca para: {$nome} ({$email})...");
+        $this->info("Iniciando busca para: {$nome} ({$email}) em {$cidade} (+{$raio}km) e Vagas Remotas...");
 
-        $vagasApi = $adzunaService->buscarVagas($skills);
+        // 1. Busca na API com filtro de localização
+        $vagasApi = $adzunaService->buscarVagas($skills, $cidade, $raio);
 
         if (empty($vagasApi)) {
             $this->warn("Nenhuma vaga foi encontrada na API ou ocorreu uma falha na conexão.");
             return Command::SUCCESS;
         }
 
-        $resultado = $filterService->processarEFiltrar($vagasApi, $skills);
+        // 2. Filtragem
+        $resultado = $filterService->processarEFiltrar($vagasApi, $skills, $cidade);
 
+        // 3. Exibição na CLI
         $this->newLine();
         $this->info("Relatório de Processamento:");
         $this->table(['Vaga', 'Empresa', 'Decisão', 'Link'], $resultado['tabela']);
 
+        // 4. Envio de E-mail
         if (!empty($resultado['aprovadas'])) {
             $this->enviarEmail($nome, $email, $resultado['aprovadas']);
         } else {
@@ -56,12 +58,12 @@ class BuscarVagasCommand extends Command
         try {
             Mail::raw($this->formatarMensagemEmail($nome, $vagas), function ($message) use ($email, $nome) {
                 $message->to($email, $nome)
-                    ->subject('Seeker - Relatório de Vagas Compatíveis');
+                        ->subject('Seeker - Relatório de Vagas Compatíveis');
             });
 
             $this->info("E-mail enviado com sucesso.");
         } catch (\Throwable $e) {
-            $this->error("Erro SMTP Exato: " . $e->getMessage());
+            $this->error("Erro SMTP: " . $e->getMessage());
         }
     }
 
